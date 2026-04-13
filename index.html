@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>デカブサ：やらないゲーム</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#000;
+  color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+  display:flex;
+  justify-content:center;
+}
+.app{
+  max-width:420px;
+  width:100%;
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:20px;
+  text-align:center;
+}
+
+/* デカブサ画像 */
+.chara{
+  width:80%;
+  max-width:260px;
+  margin-top:20px;
+  animation:float 4s ease-in-out infinite;
+}
+@keyframes float{
+  0%{transform:translateY(0)}
+  50%{transform:translateY(-8px)}
+  100%{transform:translateY(0)}
+}
+
+.title{
+  font-size:22px;
+  margin:16px 0;
+}
+.msg{
+  font-size:20px;
+  margin:10px 0 20px;
+  min-height:60px;
+}
+
+/* ボタンは下寄せ */
+.controls{
+  margin-top:auto;
+  width:100%;
+}
+
+.btn{
+  width:100%;
+  padding:16px;
+  font-size:18px;
+  border-radius:12px;
+  border:none;
+  background:#fff;
+  color:#000;
+}
+
+.small{
+  margin-top:10px;
+  opacity:.7;
+  font-size:14px;
+}
+
+.result{
+  font-size:26px;
+  margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<div id="game">
+  <!-- デカブサ画像（ここに配置） -->
+  <img src="dekabusa.png" class="chara">
+
+  <div class="title">デカブサ：やらないゲーム</div>
+  <div class="msg" id="msg">スタートを押すな</div>
+
+  <div class="controls">
+    <button class="btn" id="actionBtn">スタート</button>
+    <div class="small">※何もしないのが正解かもしれない</div>
+  </div>
+</div>
+
+<div id="result" style="display:none;">
+  <img src="dekabusa.png" class="chara">
+
+  <div class="title">結果</div>
+  <div class="result" id="rank"></div>
+  <div id="comment"></div>
+  <button class="btn" onclick="location.reload()">もう一回</button>
+</div>
+
+</div>
+
+<script>
+const messages = [
+  "今すぐ押せ",
+  "連打しろ",
+  "5秒以内に押せ",
+  "押さないと損",
+  "これは押していい（嘘）",
+  "今じゃない",
+  "考えた結果、やらない",
+  "永久に保留で"
+];
+
+let tapped = 0;
+let time = 0;
+let gameTime = 7000;
+
+const msgEl = document.getElementById("msg");
+const btn = document.getElementById("actionBtn");
+
+btn.onclick = () => {
+  tapped++;
+};
+
+let interval = setInterval(() => {
+  time += 1000;
+
+  msgEl.textContent = messages[Math.floor(Math.random()*messages.length)];
+
+  // ボタン誘惑
+  btn.style.transform = `scale(${1 + Math.random()*0.1})`;
+
+  if(time >= gameTime){
+    clearInterval(interval);
+    endGame();
+  }
+
+},1000);
+
+function endGame(){
+  document.getElementById("game").style.display="none";
+  document.getElementById("result").style.display="block";
+
+  let rank, comment;
+
+  if(tapped === 0){
+    rank = "S";
+    comment = "動かざること山の如く";
+  }else if(tapped <= 2){
+    rank = "B";
+    comment = "ちょっとだけやったな";
+  }else{
+    rank = "C";
+    comment = "やりすぎ";
+  }
+
+  document.getElementById("rank").textContent = rank;
+  document.getElementById("comment").textContent = comment;
+}
+</script>
+
+</body>
+</html>
