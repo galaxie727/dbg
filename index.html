@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>デカブサ：やらないゲーム</title>
+<title>デカブサ：見てただけ</title>
 
 <style>
 *{box-sizing:border-box}
@@ -26,54 +26,38 @@ body{
   text-align:center;
 }
 
-/* デカブサ画像 */
+/* キャラ */
 .chara{
   width:80%;
   max-width:260px;
   margin-top:20px;
-  animation:float 4s ease-in-out infinite;
-}
-@keyframes float{
-  0%{transform:translateY(0)}
-  50%{transform:translateY(-8px)}
-  100%{transform:translateY(0)}
 }
 
-.title{
+/* イベント表示 */
+.event{
   font-size:22px;
-  margin:16px 0;
-}
-.msg{
-  font-size:20px;
-  margin:10px 0 20px;
-  min-height:60px;
+  margin:30px 0;
+  min-height:80px;
 }
 
-/* ボタンは下寄せ */
-.controls{
+/* タップ誘導（押させるための罠） */
+.tapArea{
   margin-top:auto;
   width:100%;
-}
-
-.btn{
-  width:100%;
-  padding:16px;
-  font-size:18px;
+  padding:20px;
   border-radius:12px;
-  border:none;
-  background:#fff;
-  color:#000;
-}
-
-.small{
-  margin-top:10px;
-  opacity:.7;
-  font-size:14px;
+  background:rgba(255,255,255,.08);
+  font-size:18px;
 }
 
 .result{
   font-size:26px;
   margin-top:20px;
+}
+
+.small{
+  opacity:.7;
+  font-size:14px;
 }
 </style>
 </head>
@@ -82,59 +66,59 @@ body{
 <div class="app">
 
 <div id="game">
-  <!-- デカブサ画像（ここに配置） -->
   <img src="dekabusa.png" class="chara">
 
-  <div class="title">デカブサ：やらないゲーム</div>
-  <div class="msg" id="msg">スタートを押すな</div>
+  <div class="event" id="eventText">何かが起きそうだ…</div>
 
-  <div class="controls">
-    <button class="btn" id="actionBtn">スタート</button>
-    <div class="small">※何もしないのが正解かもしれない</div>
+  <div class="tapArea" id="tapArea">
+    タップすると何かできるかも
   </div>
 </div>
 
 <div id="result" style="display:none;">
   <img src="dekabusa.png" class="chara">
 
-  <div class="title">結果</div>
   <div class="result" id="rank"></div>
   <div id="comment"></div>
-  <button class="btn" onclick="location.reload()">もう一回</button>
+
+  <button onclick="location.reload()" style="margin-top:20px;padding:14px 20px;border-radius:10px;border:none;">
+    もう一回
+  </button>
 </div>
 
 </div>
 
 <script>
-const messages = [
-  "今すぐ押せ",
-  "連打しろ",
-  "5秒以内に押せ",
-  "押さないと損",
-  "これは押していい（嘘）",
-  "今じゃない",
-  "考えた結果、やらない",
-  "永久に保留で"
-];
-
 let tapped = 0;
 let time = 0;
-let gameTime = 7000;
+let gameTime = 6000;
 
-const msgEl = document.getElementById("msg");
-const btn = document.getElementById("actionBtn");
+const events = [
+  "ペンペンが走ってる",
+  "ペンペンが転んだ",
+  "トラさんが分身した",
+  "分身が増えすぎた",
+  "ナマーザ様が干からびた",
+  "黒い塊になった…",
+  "嵐が来た",
+  "全部吹き飛んだ"
+];
 
-btn.onclick = () => {
+const eventText = document.getElementById("eventText");
+const tapArea = document.getElementById("tapArea");
+
+tapArea.onclick = () => {
   tapped++;
+  tapArea.textContent = "触ったな…";
 };
 
 let interval = setInterval(() => {
   time += 1000;
 
-  msgEl.textContent = messages[Math.floor(Math.random()*messages.length)];
+  eventText.textContent = events[Math.floor(Math.random()*events.length)];
 
-  // ボタン誘惑
-  btn.style.transform = `scale(${1 + Math.random()*0.1})`;
+  // タップ誘導（ちょっと揺らす）
+  tapArea.style.opacity = String(0.8 + Math.random()*0.2);
 
   if(time >= gameTime){
     clearInterval(interval);
@@ -151,13 +135,13 @@ function endGame(){
 
   if(tapped === 0){
     rank = "S";
-    comment = "動かざること山の如く";
+    comment = "見てただけ";
   }else if(tapped <= 2){
     rank = "B";
-    comment = "ちょっとだけやったな";
+    comment = "ちょっと関わったな";
   }else{
     rank = "C";
-    comment = "やりすぎ";
+    comment = "余計なことしたな";
   }
 
   document.getElementById("rank").textContent = rank;
